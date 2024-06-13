@@ -25,13 +25,22 @@ fn main() {
         .add_plugins(PerfUiPlugin)
         .init_gizmo_group::<MyGizmos>()
         .add_systems(Startup, startup)
-        .add_systems(Update, move_player)
-        .add_systems(Update, move_camera)
+        .add_systems(Update, (move_player, move_camera, animate_entity))
         .run();
 }
 
 #[derive(Component)]
 struct Player;
+
+#[derive(Component)]
+struct EntityState {
+    movement_state: MovementState,
+}
+
+enum MovementState {
+    Idle,
+    Walk,
+}
 
 #[derive(Component)]
 struct PlayerCamera;
@@ -105,6 +114,9 @@ fn startup(
             ..default()
         },
         Player,
+        EntityState {
+            movement_state: MovementState::Idle,
+        },
     ));
 
     commands.spawn(PerfUiCompleteBundle::default());
@@ -157,4 +169,16 @@ fn move_camera(
     transform.translation = transform
         .translation
         .lerp(player_position.translation, 0.93 * time.delta_seconds());
+}
+
+fn animate_entity(mut query_entity: Query<(&mut Transform, &EntityState)>, time: Res<Time>) {
+    println!("{}", (time.elapsed_seconds()).sin());
+    for (mut transform, state) in query_entity.iter_mut() {
+        match state.movement_state {
+            MovementState::Idle => {
+                transform.scale.y = 1. + (time.elapsed_seconds()).sin().abs() / 2.;
+            }
+            MovementState::Walk => {}
+        }
+    }
 }
