@@ -7,8 +7,9 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.13", features = ["dynamic_linking"] }
-bevy_smooth_pixel_camera = "0.3.0"
 iyes_perf_ui = "0.2"
+bevy_ecs_tilemap = { git = "https://github.com/StarArawn/bevy_ecs_tilemap" }
+rand = "0.8.5"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
